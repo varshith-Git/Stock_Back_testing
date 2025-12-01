@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced Trend Analyzer - Independent LLM Optimization
-獨立增強趨勢分析器，整合LLM優化概念
+Standalone enhanced trend analyzer integrating LLM optimization concepts
 """
 
 import os
@@ -100,7 +100,7 @@ class EnhancedTrendResult:
 class EnhancedTrendAnalyzer:
     """
     Enhanced Trend Analyzer with LLM optimization features
-    整合LLM優化概念，提供更適合實時決策的趨勢分析
+    Integrates LLM optimization concepts, provides trend analysis more suitable for real-time decision making
     """
 
     def __init__(self):
@@ -140,7 +140,7 @@ class EnhancedTrendAnalyzer:
     ) -> EnhancedTrendResult:
         """
         Perform enhanced trend analysis with LLM optimization
-        執行增強趨勢分析，包含LLM決策優化功能
+        Execute enhanced trend analysis including LLM decision optimization functions
 
         Args:
             symbol: Stock symbol (e.g., '2330.TW')
@@ -219,7 +219,7 @@ class EnhancedTrendAnalyzer:
     ) -> TrendAnalysisResult:
         """
         Independent multi-timeframe market analysis
-        獨立多時間框架市場分析，替代對 AdvancedTrendAnalyzer 的依賴
+        Independent multi-timeframe market analysis, replaces dependency on AdvancedTrendAnalyzer
         """
 
         if not market_data or len(market_data) < 20:
@@ -291,19 +291,19 @@ class EnhancedTrendAnalyzer:
 
         if abs(trend_strength) < self.trend_threshold:
             trend_direction = "sideways"
-            trend_label = "横盘整理"
+            trend_label = "sideways consolidation"
         elif trend_strength > 0:
             trend_direction = "uptrend"
             if trend_strength > self.trend_strength_levels["strong"]:
-                trend_label = "强势上涨"
+                trend_label = "strong rally"
             else:
-                trend_label = "温和上涨"
+                trend_label = "moderate rise"
         else:
             trend_direction = "downtrend"
             if abs(trend_strength) > self.trend_strength_levels["strong"]:
-                trend_label = "强势下跌"
+                trend_label = "strong decline"
             else:
-                trend_label = "温和下跌"
+                trend_label = "moderate decline"
 
         # Calculate volatility
         volatility = np.std(recent_prices) / np.mean(recent_prices)
@@ -335,7 +335,7 @@ class EnhancedTrendAnalyzer:
             complexity_score=0.0,
             trend_consistency=0.0,
             detected_phases=[],
-            overall_assessment="數據不足，無法進行分析",
+            overall_assessment="Insufficient data for analysis",
         )
 
     def _create_neutral_timeframe_result(
@@ -346,7 +346,7 @@ class EnhancedTrendAnalyzer:
             timeframe=timeframe_name,
             trend_strength=0.0,
             trend_direction="sideways",
-            trend_label="數據不足",
+            trend_label="insufficient data",
             confidence=0.0,
             volatility=0.0,
             key_levels={"support": 0.0, "resistance": 0.0, "current": 0.0},
@@ -461,37 +461,37 @@ class EnhancedTrendAnalyzer:
         """Generate overall market assessment"""
 
         if dominant_trend == "insufficient_data":
-            return "數據不足，無法進行有效分析"
+            return "Insufficient data for effective analysis"
 
         consistency_desc = (
-            "高度一致"
+            "highly consistent"
             if trend_consistency > 0.8
-            else "中度一致"
+            else "moderately consistent"
             if trend_consistency > 0.5
-            else "分歧明顯"
+            else "clearly divergent"
         )
 
         complexity_desc = (
-            "複雜"
+            "complex"
             if complexity_score > 0.6
-            else "中等"
+            else "moderate"
             if complexity_score > 0.3
-            else "簡單"
+            else "simple"
         )
 
         trend_desc = {
-            "uptrend": "上升趨勢",
-            "downtrend": "下降趨勢",
-            "sideways": "橫盤整理",
-            "mixed": "混合趨勢",
-        }.get(dominant_trend, "未知趨勢")
+            "uptrend": "upward trend",
+            "downtrend": "downward trend",
+            "sideways": "sideways consolidation",
+            "mixed": "mixed trend",
+        }.get(dominant_trend, "unknown trend")
 
-        return f"市場呈現{trend_desc}，多時間框架{consistency_desc}，市場結構{complexity_desc}"
+        return f"Market shows {trend_desc}, multi-timeframes are {consistency_desc}, market structure is {complexity_desc}"
 
     def _perform_llm_optimization(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
         Perform LLM optimization analysis
-        執行LLM優化分析，避免固定時間框架滯後問題
+        Execute LLM optimization analysis, avoid fixed timeframe lag issues
         """
 
         # 1. Multi-timeframe sliding window analysis
@@ -708,40 +708,40 @@ class EnhancedTrendAnalyzer:
 
         # Trend consistency observations
         if llm_features["trend_consistency"] > 0.8:
-            observations.append("多時間框架趨勢高度一致，方向明確")
+            observations.append("Multi-timeframe trends highly consistent, clear direction")
         elif llm_features["trend_consistency"] < 0.4:
-            observations.append("不同時間框架趨勢分歧，市場方向不明")
+            observations.append("Divergent trends across timeframes, unclear market direction")
 
         # Reversal signal observations
         if llm_features["reversal_probability"] > 0.5:
             signal_strength = (
-                "強烈" if llm_features["reversal_probability"] > 0.7 else "明顯"
+                "strong" if llm_features["reversal_probability"] > 0.7 else "significant"
             )
-            observations.append(f"檢測到{signal_strength}轉折信號，市場可能正在變化")
+            observations.append(f"Detected {signal_strength} reversal signals, market may be changing")
 
         # Momentum observations
         if llm_features["momentum_status"] != "neutral":
             momentum_desc = (
-                "加速" if llm_features["trend_consistency"] > 0.7 else "減弱"
+                "accelerating" if llm_features["trend_consistency"] > 0.7 else "weakening"
             )
             observations.append(
-                f"動量呈{llm_features['momentum_status']}態勢，趨勢{momentum_desc}"
+                f"Momentum showing {llm_features['momentum_status']} tendency, trend {momentum_desc}"
             )
 
         # Generate recommendations
         if llm_features["trend_consistency"] > 0.7:
-            recommendations.append("趨勢方向明確，可考慮順勢操作")
+            recommendations.append("Clear trend direction, consider trend-following operations")
 
         if llm_features["momentum_status"] == "bullish":
-            recommendations.append("上漲動量良好，可關注做多機會")
+            recommendations.append("Good upward momentum, watch for long opportunities")
         elif llm_features["momentum_status"] == "bearish":
-            recommendations.append("下跌動量明顯，需謹慎防範風險")
+            recommendations.append("Clear downward momentum, exercise caution against risks")
 
         if llm_features["reversal_probability"] > 0.6:
-            recommendations.append("轉折信號強烈，建議等待趨勢確認後操作")
+            recommendations.append("Strong reversal signals, suggest waiting for trend confirmation before operating")
 
         if llm_features["risk_level"] == "high":
-            recommendations.append("當前風險水平較高，建議降低倉位或暫停交易")
+            recommendations.append("Current high risk level, suggest reducing positions or pausing trading")
 
         return {"observations": observations, "recommendations": recommendations}
 
@@ -756,30 +756,30 @@ def main():
     # Test with latest data
     result = analyzer.analyze_with_llm_optimization("2330.TW")
 
-    print(f"📅 分析日期: {result.analysis_date}")
-    print(f"💰 當前價格: ${result.price:.0f}")
-    print(f"📊 市場階段: {result.market_phase}")
-    print(f"🎯 趨勢一致性: {result.trend_consistency:.2f}")
-    print(f"🔄 轉折概率: {result.reversal_probability:.2f}")
-    print(f"📈 動量狀態: {result.momentum_status}")
-    print(f"⚠️  風險水平: {result.risk_level}")
+    print(f"📅 Analysis Date: {result.analysis_date}")
+    print(f"💰 Current Price: ${result.price:.0f}")
+    print(f"📊 Market Phase: {result.market_phase}")
+    print(f"🎯 Trend Consistency: {result.trend_consistency:.2f}")
+    print(f"🔄 Reversal Probability: {result.reversal_probability:.2f}")
+    print(f"📈 Momentum Status: {result.momentum_status}")
+    print(f"⚠️  Risk Level: {result.risk_level}")
 
-    print(f"\n🔍 關鍵觀察:")
+    print(f"\n🔍 Key Observations:")
     for obs in result.key_observations:
         print(f"  • {obs}")
 
-    print(f"\n💡 LLM建議:")
+    print(f"\n💡 LLM Recommendations:")
     for rec in result.llm_recommendations:
         print(f"  • {rec}")
 
-    print(f"\n📊 原始分析對比:")
-    print(f"  - 主導趨勢: {result.original_result.dominant_trend}")
-    print(f"  - 原始一致性: {result.original_result.trend_consistency:.3f}")
-    print(f"  - 複雜度分數: {result.original_result.complexity_score:.3f}")
+    print(f"\n📊 Original Analysis Comparison:")
+    print(f"  - Dominant Trend: {result.original_result.dominant_trend}")
+    print(f"  - Original Consistency: {result.original_result.trend_consistency:.3f}")
+    print(f"  - Complexity Score: {result.original_result.complexity_score:.3f}")
 
-    print(f"\n✅ 系統整合完成!")
-    print(f"📈 Enhanced Trend Analyzer 可以直接替換原有 AdvancedTrendAnalyzer")
-    print(f"🤖 提供LLM決策優化功能，同時保持向後兼容")
+    print(f"\n✅ System Integration Complete!")
+    print(f"📈 Enhanced Trend Analyzer can directly replace original AdvancedTrendAnalyzer")
+    print(f"🤖 Provides LLM decision optimization functions while maintaining backward compatibility")
 
 
 if __name__ == "__main__":

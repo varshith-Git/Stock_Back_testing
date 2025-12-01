@@ -163,5 +163,5 @@ class StockService:
             return {"symbol": symbol, "name": symbol}
 
 
-# 創建全局實例
+
 stock_service = StockService()

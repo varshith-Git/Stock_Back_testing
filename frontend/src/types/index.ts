@@ -1,14 +1,14 @@
-// 基本交易類型
+// Basic trading types
 export interface TradingSignal {
   timestamp: string
   signal_type: 'BUY' | 'SELL' | 'HOLD'
   confidence: number
   price: number
   reason: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
-// 股票數據類型
+// Stock data types
 export interface StockData {
   timestamp: string
   open: number
@@ -16,7 +16,7 @@ export interface StockData {
   low: number
   close: number
   volume: number
-  // 技術指標
+  // Technical indicators
   ma_5?: number
   ma_10?: number
   ma_20?: number
@@ -24,18 +24,18 @@ export interface StockData {
   macd?: number
   macd_signal?: number
   macd_histogram?: number
-  // 布林帶指標
+  // Bollinger Bands indicators
   bb_upper?: number
   bb_lower?: number
   bb_middle?: number
-  // 向前兼容
+  // Forward compatibility
   bollinger_upper?: number
   bollinger_lower?: number
 }
 
-// LLM 決策日誌
+// LLM decision logs
 export interface LLMDecisionLog {
-  timestamp: string  // 時間戳
+  timestamp: string  // Timestamp
   decision: {
     action?: 'BUY' | 'SELL' | 'HOLD'
     confidence?: number
@@ -43,23 +43,23 @@ export interface LLMDecisionLog {
     risk_level?: 'low' | 'medium' | 'high'
     expected_outcome?: string
   }
-  reasoning: string  // 決策推理
+  reasoning: string  // Decision reasoning
   events: Array<{
     type: string
     description: string
     strength: 'low' | 'medium' | 'high'
   }>
-  action: string    // 行動類型 (如 "THINK")
+  action: string    // Action type (e.g., "THINK")
   confidence: number
   price: number
-  // 兼容舊格式
+  // Backward compatibility
   date?: string
 }
 
-// 回測結果類型
+// Backtest result types
 export interface BacktestResult {
-  trades: any[]
-  performance: any
+  trades: unknown[]
+  performance: Record<string, unknown>
   stock_data: StockData[]
   signals: TradingSignal[]
   llm_decisions: LLMDecisionLog[]
@@ -74,7 +74,7 @@ export interface BacktestResult {
   }
 }
 
-// 技術事件類型
+// Technical event types
 export interface TechnicalEvent {
   type: string
   description: string
@@ -82,19 +82,19 @@ export interface TechnicalEvent {
   impact: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL'
 }
 
-// 趨勢分析類型
+// Trend analysis types
 export interface TrendAnalysis {
   primary_trend: 'BULLISH' | 'BEARISH' | 'SIDEWAYS'
   trend_strength: number
   trend_duration: number
-  momentum_indicators: Record<string, any>
+  momentum_indicators: Record<string, unknown>
   support_resistance: {
     support_levels: number[]
     resistance_levels: number[]
   }
 }
 
-// 回顧性分析類型
+// Retrospective analysis types
 export interface RetrospectiveAnalysis {
   summary: string
   decision_quality: {
@@ -116,8 +116,7 @@ export interface RetrospectiveAnalysis {
   recommendations: string[]
 }
 
-// 日分析響應類型
-// 日分析響應類型（與後端API匹配）
+// Daily analysis response types (matching backend API)
 export interface DayAnalysisResponse {
   historical_data: {
     date: string
@@ -141,22 +140,22 @@ export interface DayAnalysisResponse {
     }
     comprehensive_technical_analysis?: {
       date?: string
-      price_action?: Record<string, any>
-      moving_averages?: Record<string, any>
-      volume_analysis?: Record<string, any>
-      volatility_analysis?: Record<string, any>
-      momentum_indicators?: Record<string, any>
-      support_resistance?: Record<string, any>
-      trend_analysis?: Record<string, any>
-      market_regime?: Record<string, any>
-      bollinger_analysis?: Record<string, any>
-      macd_analysis?: Record<string, any>
+      price_action?: Record<string, unknown>
+      moving_averages?: Record<string, unknown>
+      volume_analysis?: Record<string, unknown>
+      volatility_analysis?: Record<string, unknown>
+      momentum_indicators?: Record<string, unknown>
+      support_resistance?: Record<string, unknown>
+      trend_analysis?: Record<string, unknown>
+      market_regime?: Record<string, unknown>
+      bollinger_analysis?: Record<string, unknown>
+      macd_analysis?: Record<string, unknown>
     }
     technical_events: Array<{
       event_type: string
       severity: string
       description: string
-      technical_data?: Record<string, any>
+      technical_data?: Record<string, unknown>
     }>
     llm_decision?: {
       decision_made: boolean
@@ -165,7 +164,7 @@ export interface DayAnalysisResponse {
       reasoning?: string
       risk_level?: string
     }
-    strategy_state?: Record<string, any>
+    strategy_state?: Record<string, unknown>
   }
   retrospective_analysis?: {
     llm_commentary: string

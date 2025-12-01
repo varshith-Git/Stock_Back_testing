@@ -19,7 +19,7 @@ from fastapi.responses import StreamingResponse
 
 from ....backtesting.engine import BacktestConfig, BacktestEngine
 from ....llm.strategies.base import StrategyConfig
-from ....llm.strategies.llm_strategy import LLMSmartStrategy  # 切換回原版
+from ....llm.strategies.llm_strategy import LLMSmartStrategy  # Switch back to original version
 from ....utils.stock_data import StockService
 
 router = APIRouter()
@@ -27,10 +27,10 @@ router = APIRouter()
 
 def safe_json_serialize(obj):
     """
-    安全的 JSON 序列化函數，處理各種不可序列化的對象
+    Safe JSON serialization function to handle various non-serializable objects
     """
     if isinstance(obj, (pd.DataFrame, pd.Series)):
-        # DataFrame 轉換為字典列表
+        # DataFrame conversion to list of dictionaries
         return obj.to_dict("records") if hasattr(obj, "to_dict") else str(obj)
     elif isinstance(obj, pd.Timestamp):
         return obj.isoformat()
@@ -45,10 +45,10 @@ def safe_json_serialize(obj):
     elif isinstance(obj, (np.bool_, bool)):
         return bool(obj)
     elif hasattr(obj, "to_dict"):
-        # 如果對象有 to_dict 方法，使用它
+        # If object has to_dict method, use it
         return obj.to_dict()
     elif hasattr(obj, "__dict__"):
-        # 如果是自定義對象，嘗試序列化其屬性
+        # If custom object, try to serialize its attributes
         return {k: safe_json_serialize(v) for k, v in obj.__dict__.items()}
     else:
         return str(obj)
@@ -56,7 +56,7 @@ def safe_json_serialize(obj):
 
 def safe_json_dumps(obj):
     """
-    安全的 JSON dumps，預處理不可序列化的對象
+    Safe JSON dumps, preprocess non-serializable objects
     """
 
     def json_serializer(o):
@@ -67,24 +67,24 @@ def safe_json_dumps(obj):
 
 @router.get("/llm-backtest-stream")
 async def stream_llm_backtest(
-    symbol: str = Query(..., description="股票代碼"),
-    period: str = Query("1y", description="回測期間"),
-    max_position_size: float = Query(0.3, description="最大持倉比例"),
-    stop_loss: float = Query(0.05, description="停損比例"),
-    take_profit: float = Query(0.1, description="停利比例"),
+    symbol: str = Query(..., description="Stock symbol"),
+    period: str = Query("1y", description="Backtest period"),
+    max_position_size: float = Query(0.3, description="Maximum position size ratio"),
+    stop_loss: float = Query(0.05, description="Stop loss ratio"),
+    take_profit: float = Query(0.1, description="Take profit ratio"),
 ):
     """
-    流式 LLM 策略回測 - 使用 Server-Sent Events
-    無上限資金模式：使用固定大額資金，專注於純交易損益計算
+    Stream LLM strategy backtest - using Server-Sent Events
+    Unlimited capital mode: Use fixed large capital, focus on pure trading P&L calculation
     """
-    # 使用無上限資金模式（1億USD）
+    # Use unlimited capital mode (100 million USD)
     initial_capital = 100000000.0
     try:
 
         def generate_backtest_stream() -> Generator[str, None, None]:
-            """生成回測進度流"""
+            """Generate backtest progress stream"""
 
-            # 創建消息隊列用於線程間通信
+            # Create message queue for thread communication
             message_queue = queue.Queue()
 
             def progress_callback(
@@ -94,7 +94,7 @@ async def stream_llm_backtest(
                 message: str,
                 extra_data: dict = None,
             ):
-                """進度回調函數"""
+                """Progress callback function"""
                 progress_data = {
                     "type": "trading_progress",
                     "day": day,
@@ -104,21 +104,21 @@ async def stream_llm_backtest(
                     "message": message,
                 }
 
-                # 如果有額外數據（如P&L信息），添加到進度數據中
+                # If there is extra data (such as P&L information), add to progress data
                 if extra_data:
                     progress_data.update(extra_data)
 
                 message_queue.put(progress_data)
 
             def run_backtest():
-                """在單獨線程中運行回測"""
+                """Run backtest in separate thread"""
                 try:
-                    # 1. 獲取股票數據
+                    # 1. Get stock data
                     message_queue.put(
                         {
                             "type": "progress",
                             "step": "data_loading",
-                            "message": f"正在獲取 {symbol} 股票數據...",
+                            "message": f"Fetching {symbol} stock data...",
                         }
                     )
 
@@ -127,36 +127,36 @@ async def stream_llm_backtest(
 
                     if not stock_data_list or len(stock_data_list) < 30:
                         message_queue.put(
-                            {"type": "error", "message": "股票數據不足，無法進行回測"}
+                            {"type": "error", "message": "Insufficient stock data for backtest"}
                         )
                         return
 
-                    # 轉換為 DataFrame，backtest engine 需要 DataFrame 格式
+                    # Convert to DataFrame, backtest engine requires DataFrame format
                     stock_data = pd.DataFrame(stock_data_list)
-                    # 設置日期為索引，並確保列名符合預期
+                    # Set date as index and ensure column names match expectations
                     stock_data["date"] = pd.to_datetime(stock_data["date"])
                     stock_data.set_index("date", inplace=True)
-                    # 重命名列以符合標準格式 (小寫，因為策略和引擎期望小寫列名)
+                    # Rename columns to match standard format (lowercase, because strategy and engine expect lowercase column names)
                     stock_data.columns = ["open", "high", "low", "close", "volume"]
 
                     message_queue.put(
                         {
                             "type": "progress",
                             "step": "data_loaded",
-                            "message": f"成功獲取 {len(stock_data)} 天的數據",
+                            "message": f"Successfully retrieved {len(stock_data)} days of data",
                         }
                     )
 
-                    # 2. 初始化策略
+                    # 2. Initialize strategy
                     message_queue.put(
                         {
                             "type": "progress",
                             "step": "strategy_init",
-                            "message": "初始化 LLM 策略...",
+                            "message": "Initializing LLM strategy...",
                         }
                     )
 
-                    # 創建 LLM 策略配置 - 使用 .env 中的固定模型
+                    # Create LLM strategy configuration - use fixed model from .env
                     strategy_config = StrategyConfig(
                         name="LLM Trading Strategy",
                         description="AI-powered trading strategy with real-time analysis",
@@ -177,20 +177,20 @@ async def stream_llm_backtest(
 
                     strategy = LLMSmartStrategy(strategy_config)
 
-                    # 3. 開始回測
+                    # 3. Start backtest
                     message_queue.put(
                         {
                             "type": "progress",
                             "step": "backtest_start",
-                            "message": "開始執行回測...",
+                            "message": "Starting backtest execution...",
                         }
                     )
 
-                    # 建立回測設定
+                    # Set up backtest configuration
                     backtest_config = BacktestConfig(initial_capital=initial_capital)
                     backtest_engine = BacktestEngine(backtest_config)
 
-                    # 執行回測
+                    # Execute backtest
                     backtest_result = backtest_engine.run_backtest(
                         stock_data=stock_data,
                         strategy=strategy,
@@ -198,16 +198,16 @@ async def stream_llm_backtest(
                         symbol=symbol,
                     )
 
-                    # 4. 發送結果
+                    # 4. Send results
                     message_queue.put(
                         {
                             "type": "progress",
                             "step": "analysis",
-                            "message": "分析回測結果...",
+                            "message": "Analyzing backtest results...",
                         }
                     )
 
-                    # 將 DataFrame 轉換為可 JSON 序列化的格式
+                    # Convert DataFrame to JSON-serializable format
                     stock_data_json = []
                     for date, row in stock_data.iterrows():
                         stock_data_json.append(
@@ -221,11 +221,11 @@ async def stream_llm_backtest(
                             }
                         )
 
-                    # 從策略對象中提取 LLM 決策記錄
+                    # Extract LLM decision logs from strategy object
                     llm_decisions = []
                     if hasattr(strategy, "decision_log"):
                         for log_entry in strategy.decision_log:
-                            # 安全處理 decision，確保不會對 None 調用 .get()
+                            # Safely handle decision, ensure not to call .get() on None
                             decision = log_entry.get("decision", {})
                             if decision is None:
                                 decision = {}
@@ -238,9 +238,9 @@ async def stream_llm_backtest(
                                     "decision": decision,
                                     "reasoning": log_entry.get("reasoning", ""),
                                     "events": log_entry.get("events", []),
-                                    "action": "THINK",  # LLM 思考決策，非交易信號
+                                    "action": "THINK",  # LLM thinking decision, not trading signal
                                     "confidence": decision.get("confidence", 0.8),
-                                    "price": 0.0,  # 這將在前端根據時間戳查找對應價格
+                                    "price": 0.0,  # This will be looked up based on timestamp at frontend
                                 }
                             )
 
@@ -254,21 +254,21 @@ async def stream_llm_backtest(
                             "stock_data": stock_data_json,
                             "signals": backtest_result.get(
                                 "trading_signals", []
-                            ),  # 修正：使用 trading_signals 而不是 signals
+                            ),  # Fixed: use trading_signals instead of signals
                             "llm_decisions": llm_decisions,
                             "statistics": {
-                                # 使用策略統計數據，這些是實際的交易損益數據
+                                # Use strategy statistics, these are actual trading P&L data
                                 "total_trades": backtest_result.get(
                                     "strategy_statistics", {}
                                 ).get("total_trades", 0),
                                 "win_rate": backtest_result.get(
                                     "strategy_statistics", {}
                                 ).get("strategy_win_rate", 0)
-                                * 100,  # 轉換為百分比
+                                * 100,  # Convert to percentage
                                 "total_return": backtest_result.get(
                                     "strategy_statistics", {}
                                 ).get("cumulative_trade_return_rate", 0)
-                                * 100,  # 轉換為百分比
+                                * 100,  # Convert to percentage
                                 "max_drawdown": backtest_result.get(
                                     "performance_metrics", {}
                                 ).get("max_drawdown", 0),
@@ -284,7 +284,7 @@ async def stream_llm_backtest(
                                 "num_trades": backtest_result.get(
                                     "strategy_statistics", {}
                                 ).get("total_trades", 0),
-                                # 新增策略專用的實現損益
+                                # Add strategy-specific realized P&L
                                 "total_realized_pnl": backtest_result.get(
                                     "strategy_statistics", {}
                                 ).get("total_realized_pnl", 0),
@@ -300,39 +300,39 @@ async def stream_llm_backtest(
 
                     message_queue.put(result_data)
                     message_queue.put(
-                        {"type": "complete", "message": "LLM 策略回測完成！"}
+                        {"type": "complete", "message": "LLM strategy backtest completed!"}
                     )
 
                 except Exception as e:
                     message_queue.put(
-                        {"type": "error", "message": f"回測過程中發生錯誤: {str(e)}"}
+                        {"type": "error", "message": f"Error during backtest: {str(e)}"}
                     )
                 finally:
-                    message_queue.put(None)  # 結束信號
+                    message_queue.put(None)  # End signal
 
-            # 發送開始信號
-            yield f"data: {safe_json_dumps({'type': 'start', 'message': '開始 LLM 策略回測...'})}\n\n"
+            # Send start signal
+            yield f"data: {safe_json_dumps({'type': 'start', 'message': 'Starting LLM strategy backtest...'})}\n\n"
 
-            # 在後台線程啟動回測
+            # Start backtest in background thread
             backtest_thread = threading.Thread(target=run_backtest)
             backtest_thread.start()
 
-            # 持續從隊列中讀取消息並發送
+            # Continuously read messages from queue and send
             while True:
                 try:
                     message = message_queue.get(timeout=1)
-                    if message is None:  # 結束信號
+                    if message is None:  # End signal
                         break
                     yield f"data: {safe_json_dumps(message)}\n\n"
                 except queue.Empty:
-                    # 發送心跳保持連接
+                    # Send heartbeat to keep connection alive
                     yield f"data: {safe_json_dumps({'type': 'heartbeat'})}\n\n"
                     continue
 
-            # 等待線程完成
+            # Wait for thread to complete
             backtest_thread.join()
 
-        # 返回 SSE 響應
+        # Return SSE response
         return StreamingResponse(
             generate_backtest_stream(),
             media_type="text/plain",
@@ -344,16 +344,16 @@ async def stream_llm_backtest(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"無法啟動流式回測: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Unable to start streaming backtest: {str(e)}")
 
 
 @router.get("/llm-backtest-stream/status")
 async def get_stream_status():
     """
-    檢查流式回測服務狀態
+    Check streaming backtest service status
     """
     return {
         "status": "ready",
-        "message": "LLM 流式回測服務正常運行",
+        "message": "LLM streaming backtest service running normally",
         "timestamp": datetime.now().isoformat(),
     }

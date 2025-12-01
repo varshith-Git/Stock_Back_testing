@@ -42,9 +42,9 @@ class BacktestLogger:
         self._init_database()
 
     def _init_database(self):
-        """初始化數據庫結構"""
+        """Initialize database structure"""
         with sqlite3.connect(self.db_path) as conn:
-            # 創建主表：每日分析日誌
+            # Create main table: daily analysis logs
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS daily_analysis_logs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,31 +53,31 @@ class BacktestLogger:
                     date DATE NOT NULL,
                     timestamp DATETIME NOT NULL,
                     
-                    -- 基本市場數據 (結構化，便於查詢)
+                    -- Basic market data (structured, easy to query)
                     price REAL,
                     volume INTEGER,
                     daily_return REAL,
                     volatility REAL,
                     
-                    -- 趨勢分析 (JSON)
-                    trend_analysis TEXT, -- JSON字符串
+                    -- Trend analysis (JSON)
+                    trend_analysis TEXT, -- JSON string
                     
-                    -- 全面技術分析 (JSON) - 新增
-                    comprehensive_technical_analysis TEXT, -- JSON字符串
+                    -- Comprehensive technical analysis (JSON) - new
+                    comprehensive_technical_analysis TEXT, -- JSON string
                     
-                    -- 觸發事件 (JSON)
-                    triggered_events TEXT, -- JSON字符串
+                    -- Triggered events (JSON)
+                    triggered_events TEXT, -- JSON string
                     
-                    -- LLM決策 (JSON)
-                    llm_decision TEXT, -- JSON字符串
+                    -- LLM decision (JSON)
+                    llm_decision TEXT, -- JSON string
                     
-                    -- 交易信號 (JSON)
-                    trading_signal TEXT, -- JSON字符串
+                    -- Trading signal (JSON)
+                    trading_signal TEXT, -- JSON string
                     
-                    -- 策略狀態 (JSON)
-                    strategy_state TEXT, -- JSON字符串
+                    -- Strategy state (JSON)
+                    strategy_state TEXT, -- JSON string
                     
-                    -- 結果評估 (後續更新)
+                    -- Result evaluation (updated later)
                     actual_pnl REAL,
                     prediction_accuracy REAL,
                     
@@ -85,7 +85,7 @@ class BacktestLogger:
                 )
             """)
 
-            # 創建事件分析表
+            # Create event analysis table
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS event_analysis_logs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,14 +95,14 @@ class BacktestLogger:
                     severity TEXT,
                     detection_time DATETIME,
                     
-                    -- 市場上下文 (JSON)
-                    market_context TEXT, -- JSON字符串
+                    -- Market context (JSON)
+                    market_context TEXT, -- JSON string
                     
-                    -- LLM響應 (JSON) 
-                    llm_response TEXT, -- JSON字符串
+                    -- LLM response (JSON) 
+                    llm_response TEXT, -- JSON string
                     
-                    -- 效果評估 (JSON)
-                    effectiveness TEXT, -- JSON字符串
+                    -- Effectiveness evaluation (JSON)
+                    effectiveness TEXT, -- JSON string
                     
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     
@@ -110,7 +110,7 @@ class BacktestLogger:
                 )
             """)
 
-            # 創建索引
+            # Create indexes
             conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_daily_logs_date_symbol 
                 ON daily_analysis_logs (date, symbol)
@@ -134,33 +134,33 @@ class BacktestLogger:
         date: str,
         market_data: Dict[str, Any],
         trend_analysis: Dict[str, Any] = None,
-        comprehensive_technical_analysis: Dict[str, Any] = None,  # 新增參數
+        comprehensive_technical_analysis: Dict[str, Any] = None,  # New parameter
         triggered_events: List[Dict[str, Any]] = None,
         llm_decision: Dict[str, Any] = None,
         trading_signal: Dict[str, Any] = None,
         strategy_state: Dict[str, Any] = None,
     ) -> int:
         """
-        記錄每日分析數據 (新記錄會覆蓋同一股票同一天的舊記錄)
+        Record daily analysis data (new records overwrite old records for same stock same day)
 
         Args:
-            symbol: 股票代碼
-            date: 日期 (YYYY-MM-DD)
-            market_data: 市場數據字典
-            trend_analysis: 趨勢分析結果
-            comprehensive_technical_analysis: 全面技術分析結果
-            triggered_events: 觸發事件列表
-            llm_decision: LLM決策結果
-            trading_signal: 交易信號
-            strategy_state: 策略狀態
+            symbol: Stock symbol
+            date: Date (YYYY-MM-DD)
+            market_data: Market data dictionary
+            trend_analysis: Trend analysis result
+            comprehensive_technical_analysis: Comprehensive technical analysis result
+            triggered_events: Triggered events list
+            llm_decision: LLM decision result
+            trading_signal: Trading signal
+            strategy_state: Strategy state
 
         Returns:
-            記錄的ID
+            Record ID
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
-            # 檢查是否存在相同的記錄 (同一symbol + date)
+            # Check if same record exists (same symbol + date)
             cursor.execute(
                 """
                 SELECT id FROM daily_analysis_logs 
@@ -173,11 +173,11 @@ class BacktestLogger:
             existing_records = cursor.fetchall()
 
             if existing_records:
-                # 刪除舊記錄和相關的事件記錄
+                # Delete old records and related event records
                 old_ids = [record[0] for record in existing_records]
                 old_ids_str = ",".join("?" * len(old_ids))
 
-                # 先刪除相關的事件分析記錄
+                # First delete related event analysis records
                 cursor.execute(
                     f"""
                     DELETE FROM event_analysis_logs 
@@ -186,7 +186,7 @@ class BacktestLogger:
                     old_ids,
                 )
 
-                # 再刪除每日分析記錄
+                # Then delete daily analysis records
                 cursor.execute(
                     f"""
                     DELETE FROM daily_analysis_logs 
@@ -195,9 +195,9 @@ class BacktestLogger:
                     old_ids,
                 )
 
-                print(f"🔄 覆蓋 {symbol} - {date} 的舊記錄 ({len(old_ids)}條)")
+                print(f"🔄 Overwriting old records for {symbol} - {date} ({len(old_ids)} records)")
 
-            # 插入新記錄
+            # Insert new record
             cursor.execute(
                 """
                 INSERT INTO daily_analysis_logs (
@@ -239,15 +239,15 @@ class BacktestLogger:
         effectiveness: Dict[str, Any] = None,
     ):
         """
-        記錄事件分析數據
+        Record event analysis data
 
         Args:
-            daily_log_id: 對應的日誌記錄ID
-            event_type: 事件類型
-            severity: 嚴重程度
-            market_context: 市場上下文
-            llm_response: LLM響應
-            effectiveness: 效果評估
+            daily_log_id: Corresponding log record ID
+            event_type: Event type
+            severity: Severity
+            market_context: Market context
+            llm_response: LLM response
+            effectiveness: Effectiveness evaluation
         """
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
@@ -273,12 +273,12 @@ class BacktestLogger:
         self, log_id: int, actual_pnl: float, prediction_accuracy: float
     ):
         """
-        更新實際結果
+        Update actual results
 
         Args:
-            log_id: 日誌記錄ID
-            actual_pnl: 實際損益
-            prediction_accuracy: 預測準確度
+            log_id: Log record ID
+            actual_pnl: Actual P&L
+            prediction_accuracy: Prediction accuracy
         """
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
@@ -299,17 +299,17 @@ class BacktestLogger:
         limit: int = 100,
     ) -> List[Dict[str, Any]]:
         """
-        查詢日誌記錄
+        Query log records
 
         Args:
-            symbol: 股票代碼
-            date_from: 開始日期
-            date_to: 結束日期
-            event_type: 事件類型
-            limit: 限制返回數量
+            symbol: Stock symbol
+            date_from: Start date
+            date_to: End date
+            event_type: Event type
+            limit: Limit return count
 
         Returns:
-            日誌記錄列表
+            List of log records
         """
         query = """
             SELECT d.*, GROUP_CONCAT(e.event_type) as event_types
@@ -341,12 +341,12 @@ class BacktestLogger:
             cursor = conn.execute(query, params)
             rows = cursor.fetchall()
 
-            # 轉換為字典並解析JSON字段
+            # Convert to dictionary and parse JSON fields
             results = []
             for row in rows:
                 record = dict(row)
 
-                # 解析JSON字段
+                # Parse JSON fields
                 for json_field in [
                     "trend_analysis",
                     "comprehensive_technical_analysis",
@@ -367,15 +367,15 @@ class BacktestLogger:
 
     def get_session_summary(self) -> Dict[str, Any]:
         """
-        獲取會話摘要統計
+        Get session summary statistics
 
         Returns:
-            會話統計數據
+            Session statistics data
         """
         with sqlite3.connect(self.db_path) as conn:
-            conn.row_factory = sqlite3.Row  # 啟用Row工廠
+            conn.row_factory = sqlite3.Row  # Enable Row factory
 
-            # 基本統計
+            # Basic statistics
             cursor = conn.execute(
                 """
                 SELECT 
@@ -394,7 +394,7 @@ class BacktestLogger:
             row = cursor.fetchone()
             basic_stats = dict(row) if row else {}
 
-            # LLM決策統計
+            # LLM decision statistics
             cursor = conn.execute(
                 """
                 SELECT 
@@ -411,7 +411,7 @@ class BacktestLogger:
             row = cursor.fetchone()
             llm_stats = dict(row) if row else {}
 
-            # 事件統計
+            # Event statistics
             cursor = conn.execute(
                 """
                 SELECT 
@@ -437,10 +437,10 @@ class BacktestLogger:
 
     def export_to_json(self, filepath: str):
         """
-        導出日誌到JSON文件
+        Export logs to JSON file
 
         Args:
-            filepath: 輸出文件路徑
+            filepath: Output file path
         """
         logs = self.query_logs(limit=None)
         summary = self.get_session_summary()
@@ -450,4 +450,4 @@ class BacktestLogger:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(export_data, f, ensure_ascii=False, indent=2, default=str)
 
-        print(f"✅ 日誌已導出到: {filepath}")
+        print(f"✅ Logs exported to: {filepath}")

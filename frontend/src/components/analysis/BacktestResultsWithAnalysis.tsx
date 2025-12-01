@@ -30,7 +30,7 @@ export default function BacktestResultsWithAnalysis({
 
   // Format number with commas
   const formatNumber = (num: number): string => {
-    return num.toLocaleString('zh-TW', { 
+    return num.toLocaleString('en-US', { 
       minimumFractionDigits: 2, 
       maximumFractionDigits: 2 
     })
@@ -46,7 +46,7 @@ export default function BacktestResultsWithAnalysis({
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          沒有可用的回測結果數據
+          No backtest results available
         </AlertDescription>
       </Alert>
     )
@@ -59,7 +59,7 @@ export default function BacktestResultsWithAnalysis({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            回測結果與分析
+            Backtest Results & Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -68,13 +68,13 @@ export default function BacktestResultsWithAnalysis({
               <div className="text-2xl font-bold text-blue-600">
                 {backtestResult.statistics?.total_trades || 0}
               </div>
-              <div className="text-sm text-gray-600">總交易次數</div>
+              <div className="text-sm text-gray-600">Total Trades</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
                 {formatPercentage(backtestResult.statistics?.win_rate || 0)}
               </div>
-              <div className="text-sm text-gray-600">勝率</div>
+              <div className="text-sm text-gray-600">Win Rate</div>
             </div>
             <div className="text-center">
               <div className={`text-2xl font-bold ${
@@ -82,13 +82,13 @@ export default function BacktestResultsWithAnalysis({
               }`}>
                 {formatPercentage(backtestResult.statistics?.total_return || 0)}
               </div>
-              <div className="text-sm text-gray-600">總回報率</div>
+              <div className="text-sm text-gray-600">Total Return</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">
                 {formatPercentage(Math.abs(backtestResult.statistics?.max_drawdown || 0))}
               </div>
-              <div className="text-sm text-gray-600">最大回撤</div>
+              <div className="text-sm text-gray-600">Max Drawdown</div>
             </div>
           </div>
           
@@ -102,14 +102,14 @@ export default function BacktestResultsWithAnalysis({
                   }`}>
                     ${formatNumber(backtestResult.statistics.total_realized_pnl)}
                   </div>
-                  <div className="text-sm text-gray-600">已實現損益</div>
+                  <div className="text-sm text-gray-600">Realized P&L</div>
                 </div>
                 {backtestResult.statistics.cumulative_trade_return_rate && (
                   <div className="text-center">
                     <div className="text-lg font-bold text-orange-600">
                       {formatPercentage(backtestResult.statistics.cumulative_trade_return_rate)}
                     </div>
-                    <div className="text-sm text-gray-600">累計交易回報率</div>
+                    <div className="text-sm text-gray-600">Cumulative Trade Return Rate</div>
                   </div>
                 )}
               </div>
@@ -123,33 +123,33 @@ export default function BacktestResultsWithAnalysis({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Info className="h-5 w-5" />
-            數據概覽
+            Data Overview
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <div className="text-sm text-gray-600">股價數據點</div>
+              <div className="text-sm text-gray-600">Price datapoints</div>
               <div className="text-lg font-bold">
                 {backtestResult.stock_data?.length || 0}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">交易信號</div>
+              <div className="text-sm text-gray-600">Trading signals</div>
               <div className="text-lg font-bold">
                 {backtestResult.signals?.length || 0}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">LLM 決策</div>
+              <div className="text-sm text-gray-600">LLM decisions</div>
               <div className="text-lg font-bold">
                 {backtestResult.llm_decisions?.length || 0}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">分析功能</div>
+              <div className="text-sm text-gray-600">Analysis features</div>
               <div className="text-lg font-bold">
-                日別分析
+                Daily analysis
               </div>
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function BacktestResultsWithAnalysis({
             <div className="flex items-center justify-center">
               <Badge variant="outline" className="text-center">
                 <Calendar className="h-3 w-3 mr-1" />
-                請使用下方的日別分析功能選擇日期進行詳細分析
+                Use daily analysis below to select a date for detailed review
               </Badge>
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function BacktestResultsWithAnalysis({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            股價走勢與交易信號
+            Price Trend & Trading Signals
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -190,7 +190,7 @@ export default function BacktestResultsWithAnalysis({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            日別 LLM 分析
+            Daily LLM Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>

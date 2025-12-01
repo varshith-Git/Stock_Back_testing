@@ -1,21 +1,21 @@
 """
 LLM Strategies Module
-基於 LLM 的交易策略 - 領域分離架構
+LLM-based Trading Strategies - Domain Separation Architecture
 
-此模塊實現了重構的LLM交易策略，使用領域分離架構將原有的單體類分解為多個專業模塊：
+This module implements refactored LLM trading strategies using a domain separation architecture that breaks down the original monolithic class into multiple specialized modules:
 
-核心模塊:
-- LLMSmartStrategy: 主策略類 (重構版)
-- LLMDecisionEngine: LLM決策引擎
-- RiskManager: 風險管理器
-- PositionManager: 倉位管理器
-- StockCharacteristicsAnalyzer: 股票特性分析器
-- TradingEventDetector: 交易事件檢測器
-- PerformanceTracker: 績效追蹤器
+Core Modules:
+- LLMSmartStrategy: Main strategy class (refactored version)
+- LLMDecisionEngine: LLM decision engine
+- RiskManager: Risk manager
+- PositionManager: Position manager
+- StockCharacteristicsAnalyzer: Stock characteristics analyzer
+- TradingEventDetector: Trading event detector
+- PerformanceTracker: Performance tracker
 
-重構前後對比:
-- 重構前: 單一類 (~2900行, 30+方法)
-- 重構後: 8個專業模塊 (~500行/模塊, 職責明確)
+Refactoring Comparison:
+- Before refactoring: Single class (~2900 lines, 30+ methods)
+- After refactoring: 8 specialized modules (~500 lines/module, clear responsibilities)
 """
 
 from .base import (
@@ -28,25 +28,25 @@ from .base import (
     get_available_strategies,
 )
 
-# 新的重構模塊 (暫時註解掉，因為data_types已移除)
+# New refactored modules (temporarily commented out because data_types has been removed)
 # from .data_types import (
-#     # 決策相關
+#     # Decision related
 #     DecisionContext,
 #     LLMDecision,
 #     PerformanceMetrics,
 #     PnLInsights,
 #     PositionMetrics,
 #     StockCharacteristics,
-#     # 策略狀態
+#     # Strategy state
 #     StrategyState,
 #     TechnicalParameters,
-#     # 核心數據類型
+#     # Core data types
 #     TradingEvent,
 #     TradingSignalRequest,
 # )
 # from .llm_decision_engine import LLMDecisionEngine
 # from .llm_smart_strategy import LLMSmartStrategy
-# 原有策略 (向後兼容)
+# Original strategy (backward compatibility)
 from .llm_strategy import LLMSmartStrategy as LLMStrategyLegacy
 
 # from .performance_tracker import PerformanceTracker
@@ -64,18 +64,18 @@ __all__ = [
     "TradingSignal",
     "TradingStrategy",
     "get_available_strategies",
-    # 原有策略 (向後兼容)
+    # Original strategy (backward compatibility)
     "LLMStrategyLegacy",
-    # 新的主策略類 (暫時註解，因為模塊已移除)
+    # New main strategy class (temporarily commented, because module has been removed)
     # "LLMSmartStrategy",
-    # 核心模塊 (暫時註解，因為模塊已移除)
+    # Core modules (temporarily commented, because modules have been removed)
     # "LLMDecisionEngine",
     # "RiskManager",
     # "PositionManager",
     # "StockCharacteristicsAnalyzer",
     # "TradingEventDetector",
     # "PerformanceTracker",
-    # 數據類型 (暫時註解，因為模塊已移除)
+    # Data types (temporarily commented, because module has been removed)
     # "TradingEvent",
     # "StockCharacteristics",
     # "TechnicalParameters",
@@ -86,61 +86,61 @@ __all__ = [
     # "LLMDecision",
     # "TradingSignalRequest",
     # "StrategyState",
-    # 輔助函數
+    # Helper functions
     "print_architecture_info",
     "get_module_info",
 ]
 
-# 版本信息
+# Version information
 __version__ = "2.0.0"
 __author__ = "LLM Agent Trader Team"
 __description__ = "Refactored LLM Trading Strategy with Domain Separation Architecture"
 
-# 架構說明
+# Architecture description
 ARCHITECTURE_INFO = """
-領域分離架構 (Domain Separation Architecture):
+Domain Separation Architecture (Domain Separation Architecture):
 
-📊 LLMSmartStrategy (主控制器)
-├── 🤖 LLMDecisionEngine (LLM決策引擎)
-│   ├── prompt建構
-│   ├── LLM調用
-│   └── 響應解析
-├── ⚡ RiskManager (風險管理器)  
-│   ├── 風險評估
-│   ├── 損益洞察
-│   └── 決策驗證
-├── 💼 PositionManager (倉位管理器)
-│   ├── 持倉追蹤
-│   ├── 交易執行
-│   └── 損益計算
-├── 📈 StockCharacteristicsAnalyzer (股票特性分析器)
-│   ├── 波動性分析
-│   ├── 趨勢一致性
-│   └── MACD有效性
-├── 🔍 TradingEventDetector (交易事件檢測器)
-│   ├── MACD信號
-│   ├── 均線穿越
-│   ├── 布林帶突破
-│   └── 價格突破
-└── 📊 PerformanceTracker (績效追蹤器)
-    ├── 交易記錄
-    ├── 績效計算
-    └── 報告生成
+📊 LLMSmartStrategy (Main Controller)
+├── 🤖 LLMDecisionEngine (LLM Decision Engine)
+│   ├── Prompt construction
+│   ├── LLM invocation
+│   └── Response parsing
+├── ⚡ RiskManager (Risk Manager)  
+│   ├── Risk assessment
+│   ├── P&L insights
+│   └── Decision validation
+├── 💼 PositionManager (Position Manager)
+│   ├── Position tracking
+│   ├── Trade execution
+│   └── P&L calculation
+├── 📈 StockCharacteristicsAnalyzer (Stock Characteristics Analyzer)
+│   ├── Volatility analysis
+│   ├── Trend consistency
+│   └── MACD effectiveness
+├── 🔍 TradingEventDetector (Trading Event Detector)
+│   ├── MACD signals
+│   ├── Moving average crossovers
+│   ├── Bollinger Band breakouts
+│   └── Price breakouts
+└── 📊 PerformanceTracker (Performance Tracker)
+    ├── Trade records
+    ├── Performance calculation
+    └── Report generation
 
-📋 data_types (共享數據結構)
-├── DTOs和數據類
-├── 類型定義
-└── 接口標準
+📋 data_types (Shared Data Structures)
+├── DTOs and data classes
+├── Type definitions
+└── Interface standards
 """
 
 
 def print_architecture_info():
-    """打印架構信息"""
+    """Print architecture information"""
     print(ARCHITECTURE_INFO)
 
 
 def get_module_info():
-    """獲取模塊信息"""
+    """Get module information"""
     return {
         "version": __version__,
         "author": __author__,
