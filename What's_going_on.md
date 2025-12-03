@@ -14,7 +14,7 @@ Stock Data (1yr) → Technical Analysis → LLM Decision → Trade Simulation �
 
 ## Architecture Diagram
 
-![Architecture Diagram](assets/architecture_diagram.png)
+![Architecture Diagram](assets/Architecture_Diagram.svg)
 
 
 ---
