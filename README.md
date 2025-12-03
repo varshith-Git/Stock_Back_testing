@@ -1,6 +1,10 @@
 # LLM Agent Trader
 AI-powered stock trading backtesting system that integrates Large Language Models for intelligent trading decision analysis.
 
+> [!IMPORTANT]
+> Stock back testing is in early development, so bugs and breaking changes are expected.
+> Please use the [issues page](https://github.com/varshith-Git/Stock_Back_testing/issues) to report bugs or request features.
+
 ## System Architecture
 
 ```mermaid
