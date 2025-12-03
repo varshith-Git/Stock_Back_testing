@@ -1,4 +1,4 @@
-# LLM Agent Trader
+# Stock_Back_testing
 AI-powered stock trading backtesting system that integrates Large Language Models for intelligent trading decision analysis.
 
 > [!IMPORTANT]
