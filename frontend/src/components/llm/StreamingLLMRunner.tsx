@@ -547,7 +547,7 @@ export default function StreamingLLMRunner() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
+            <div suppressHydrationWarning>
               <Label htmlFor="symbol">Stock Symbol</Label>
               <Input
                 id="symbol"
@@ -558,7 +558,7 @@ export default function StreamingLLMRunner() {
               />
             </div>
             
-            <div>
+            <div suppressHydrationWarning>
               <Label htmlFor="period">Backtest Period</Label>
               <Select value={period} onValueChange={setPeriod} disabled={isRunning}>
                 <SelectTrigger>
@@ -581,7 +581,7 @@ export default function StreamingLLMRunner() {
             </div>
           </div>
           
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-4" suppressHydrationWarning>
             <Button 
               onClick={startStreaming} 
               disabled={isRunning || isStarting} 
